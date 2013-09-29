@@ -1,0 +1,8 @@
+# Copyright (C) JianfengYe
+# 确认是否是root
+
+if [ $UID -ne 0 ]
+then
+	echo "Error: You must be root to run the script!"
+	exit 1
+fi

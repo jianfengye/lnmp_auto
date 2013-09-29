@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ $UID -ne 0 ]
+then
+	echo "you are not root"
+	exit 1
+fi
+echo "you are root"
+exit 1

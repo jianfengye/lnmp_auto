@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# Copyright (C) JianfengYe
+# 自动化编译入口
+
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+
+# 确认是root帐号运行
+. check/root
+
+# 读取编译参数
+. auto/options
+# 读取配置文件
+. auto/config
+
+# 关闭SELinux
+. auto/selinux
+
+# 下载并安装mysql
+. check/mysql
+. auto/mysql
+
+# 下载并安装php
+. check/php
+. auto/php
+
+# 下载并安装nginx
+. check/nginx
+. auto/nginx
