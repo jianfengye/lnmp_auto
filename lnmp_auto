@@ -18,13 +18,10 @@ export PATH
 . auto/selinux
 
 # 下载并安装mysql
-. check/mysql
 . auto/mysql
 
 # 下载并安装php
-. check/php
 . auto/php
 
 # 下载并安装nginx
-. check/nginx
 . auto/nginx

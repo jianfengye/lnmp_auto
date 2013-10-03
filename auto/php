@@ -1,0 +1,22 @@
+# Copyright (C) JianfengYe
+# 安装php
+
+# 下载php
+cd "$ROOT_PATH"/download/
+wget ${SOURCE_PHP} -o php.tar.gz
+tar -zxvf php.tar.gz
+
+# 安装php
+BINARY_PHP_PATH="$ROOT_PATH"/binary/php
+BINARY_MYSQL_PATH="$ROOT_PATH"/binary/mysql
+
+cd php
+./configure \
+--prefix="$BINARY_PHP_PATH" \
+--with-mysql="$BINARY_MYSQL_PATH" \
+--enable-soap \
+--enable-mbstring=all \
+--enable-sockets 
+
+make
+make install

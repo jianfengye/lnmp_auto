@@ -1,0 +1,36 @@
+# Copyright (C) JianfengYe
+# 安装mysql
+
+# 下载mysql
+cd "$ROOT_PATH"/download/
+wget ${SOURCE_MYSQL} -o mysql.tar.gz
+tar -zxvf mysql.tar.gz
+
+# 安装mysql
+BINARY_MYSQL_PATH="$ROOT_PATH"/binary/mysql
+
+cd mysql
+./configure --prefix="$BINARY_MYSQL_PATH" \
+--with-charset=utf8 \
+--with-collaction=utf8_general_ci 
+
+make
+make install
+
+groupadd mysql
+useradd -r -g mysql mysql
+
+cd $BINARY_MYSQL_PATH/bin
+./mysql_install_db \
+--user=mysql \
+--basedir="$BINARY_MYSQL_PATH" \
+--datadir="$BINARY_MYSQL_PATH"/data
+
+cd "$BINARY_MYSQL_PATH"/support-files
+cp mysql.server /etc/rc.d/init.d/mysql
+cp mysql-default.cnf /etc/my.cnf
+
+chkconfig -add mysql
+chkconfig mysql on
+
+service mysql start

@@ -1,2 +1,14 @@
 # Copyright (C) JianfengYe
 # 读取配置文件
+
+ROOT_PATH=
+
+SOURCE_MYSQL=
+SOURCE_PHP=
+SOURCE_NGINX=
+
+
+if [ -n "$ROOT_PATH" ]
+then
+	ROOT_PATH=$(pwd)/${0}/../
+fi
