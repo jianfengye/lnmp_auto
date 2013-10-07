@@ -2,9 +2,14 @@
 
 # Copyright (C) JianfengYe
 # 自动化编译入口
-
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
+
+if [ -z "$ROOT_PATH" ]
+then
+	ROOT_PATH=$(cd "$(dirname "$0")"; pwd)
+fi
+cd $ROOT_PATH
 
 # 确认是root帐号运行
 . check/root
@@ -19,7 +24,7 @@ export PATH
 
 # 下载并安装mysql
 . auto/mysql
-
+echo 1234567;exit 1;
 # 下载并安装php
 . auto/php
 

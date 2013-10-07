@@ -3,34 +3,41 @@
 
 # 下载mysql
 cd "$ROOT_PATH"/download/
-wget ${SOURCE_MYSQL} -o mysql.tar.gz
-tar -zxvf mysql.tar.gz
+if [ ! -f "mysql.tar.gz" ]
+then
+	wget ${SOURCE_MYSQL} -O mysql.tar.gz
+fi
 
 # 安装mysql
 BINARY_MYSQL_PATH="$ROOT_PATH"/binary/mysql
 
-cd mysql
-./configure --prefix="$BINARY_MYSQL_PATH" \
---with-charset=utf8 \
---with-collaction=utf8_general_ci 
-
-make
-make install
+tar -zxvf mysql.tar.gz -C "$BINARY_MYSQL_PATH"
 
 groupadd mysql
 useradd -r -g mysql mysql
 
-cd $BINARY_MYSQL_PATH/bin
+cd $BINARY_MYSQL_PATH/script
 ./mysql_install_db \
 --user=mysql \
 --basedir="$BINARY_MYSQL_PATH" \
 --datadir="$BINARY_MYSQL_PATH"/data
 
-cd "$BINARY_MYSQL_PATH"/support-files
-cp mysql.server /etc/rc.d/init.d/mysql
-cp mysql-default.cnf /etc/my.cnf
+# 是否要安装mysql为系统服务
+echo $SPLITE_LINE
 
-chkconfig -add mysql
-chkconfig mysql on
+checkinstall="n"
+read -p "Are you sure want to install mysql into service?(y/n):" checkinstall
+if [ "$checkinstall" = "y" ]
+then
+	ln -s "$BINARY_MYSQL_PATH"/binary/mysql/bin/mysql /usr/bin/mysql
+	cd "$BINARY_MYSQL_PATH"/support-files
+	cp mysql.server /etc/rc.d/init.d/mysql
+	cp mysql-default.cnf /etc/my.cnf
 
-service mysql start
+	chkconfig -add mysql
+	chkconfig mysql on
+
+	service mysql start
+if
+
+
