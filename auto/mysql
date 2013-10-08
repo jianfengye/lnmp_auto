@@ -3,20 +3,38 @@
 
 # 下载mysql
 cd "$ROOT_PATH"/download/
-if [ ! -f "mysql.tar.gz" ]
+if [ ! -f "$SOURCE_MYSQL_FILE" ]
 then
-	wget ${SOURCE_MYSQL} -O mysql.tar.gz
+	wget ${SOURCE_MYSQL}
 fi
 
 # 安装mysql
 BINARY_MYSQL_PATH="$ROOT_PATH"/binary/mysql
+if [ ! -d "$BINARY_MYSQL_PATH" ]
+then
+	mkdir -p $BINARY_MYSQL_PATH
+fi
 
-tar -zxvf mysql.tar.gz -C "$BINARY_MYSQL_PATH"
+# tar -zxf "$SOURCE_MYSQL_FILE" -C "$BINARY_MYSQL_PATH"/
 
-groupadd mysql
-useradd -r -g mysql mysql
+BINARY_MYSQL_PATH="$BINARY_MYSQL_PATH"/"$BINARY_MYSQL_FOLDER"
 
-cd $BINARY_MYSQL_PATH/script
+if grep -q mysql /etc/group
+then
+	echo "mysql group exists"
+else
+	groupadd mysql
+fi
+
+if groups mysql | grep -q -E ' mysql(\s|$)'
+then
+	echo "mysql user exists"
+else
+    useradd -r -g mysql mysql
+fi
+
+
+cd $BINARY_MYSQL_PATH/scripts/
 ./mysql_install_db \
 --user=mysql \
 --basedir="$BINARY_MYSQL_PATH" \

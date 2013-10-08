@@ -5,5 +5,18 @@ SOURCE_MYSQL=http://cdn.mysql.com/Downloads/MySQL-5.1/mysql-5.1.72-linux-x86_64-
 SOURCE_PHP=
 SOURCE_NGINX=
 
+MACHINE_LONG_BIT=$(getconf LONG_BIT)
+# 判断机器是下哪个版本的文件
+if [ "MACHINE_LONG_BIT" = "64" ]
+then
+	SOURCE_MYSQL=http://cdn.mysql.com/Downloads/MySQL-5.1/mysql-5.1.72-linux-x86_64-glibc23.tar.gz
+	SOURCE_MYSQL_FILE=mysql-5.1.72-linux-x86_64-glibc23.tar.gz
+	BINARY_MYSQL_FOLDER=mysql-5.1.72-linux-x86_64-glibc23
+else
+	SOURCE_MYSQL=http://cdn.mysql.com/Downloads/MySQL-5.1/mysql-5.1.72-linux-i686-glibc23.tar.gz
+	SOURCE_MYSQL_FILE=mysql-5.1.72-linux-i686-glibc23.tar.gz
+	BINARY_MYSQL_FOLDER=mysql-5.1.72-linux-i686-glibc23
+fi
+
 
 SPLITE_LINE="================================="
