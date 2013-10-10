@@ -33,29 +33,41 @@ else
     useradd -r -g mysql mysql
 fi
 
+chown -R mysql:mysql $BINARY_MYSQL_PATH
 
 cd $BINARY_MYSQL_PATH/scripts/
 ./mysql_install_db \
 --user=mysql \
 --basedir="$BINARY_MYSQL_PATH" \
---datadir="$BINARY_MYSQL_PATH"/data
+--datadir="$BINARY_MYSQL_PATH"/data >/dev/null 2>&1
 
 # 是否要安装mysql为系统服务
 echo $SPLITE_LINE
 
+
+:<<BLOCK
 checkinstall="n"
 read -p "Are you sure want to install mysql into service?(y/n):" checkinstall
-if [ "$checkinstall" = "y" ]
+if [ $checkinstall="y" ]
 then
-	ln -s "$BINARY_MYSQL_PATH"/binary/mysql/bin/mysql /usr/bin/mysql
-	cd "$BINARY_MYSQL_PATH"/support-files
+	FILELIST=`ls $BINARY_MYSQL_PATH/bin`
+	for FILENAME in $FILELIST
+	do
+		ln -sn --force $BINARY_MYSQL_PATH/bin/$FILENAME /bin/$FILENAME
+	done
+	ln -sfn $BINARY_MYSQL_PATH /usr/local/mysql
+	cd $BINARY_MYSQL_PATH/support-files
 	cp mysql.server /etc/rc.d/init.d/mysql
-	cp mysql-default.cnf /etc/my.cnf
+	cp my-small.cnf /etc/my.cnf
 
-	chkconfig -add mysql
+	chkconfig --del mysql
+	chkconfig --add mysql
 	chkconfig mysql on
 
 	service mysql start
-if
+fi
+BLOCK
 
+# TODO: mysql设置账号
 
+cd $ROOT_PATH

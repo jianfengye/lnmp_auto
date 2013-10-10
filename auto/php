@@ -3,20 +3,74 @@
 
 # 下载php
 cd "$ROOT_PATH"/download/
-wget ${SOURCE_PHP} -o php.tar.gz
-tar -zxvf php.tar.gz
+if [ ! -f "$SOURCE_PHP_FILE" ]
+then
+	wget ${SOURCE_PHP}
+fi
+
+# tar -zxf "$SOURCE_PHP_FILE"
+
 
 # 安装php
 BINARY_PHP_PATH="$ROOT_PATH"/binary/php
-BINARY_MYSQL_PATH="$ROOT_PATH"/binary/mysql
 
-cd php
+cd $ROOT_PATH/download/$SOURCE_PHP_FOLDER
+
+yum -y install libxml2 libxml2-devel openssl openssl-devel \
+curl curl-devel gd gd-devel libmcrypt libmcrypt-devel
+
+:<<BLOCK
 ./configure \
 --prefix="$BINARY_PHP_PATH" \
---with-mysql="$BINARY_MYSQL_PATH" \
---enable-soap \
---enable-mbstring=all \
---enable-sockets 
+--with-config-file-path="$BINARY_PHP_PATH"/etc \
+--with-iconv-dir \
+--with-freetype-dir \
+--with-jpeg-dir \
+--with-png-dir \
+--with-zlib \
+--with-libxml-dir=/usr \
+-enable-xml \
+-enable-inline-optimization \
+--with-curl \
+-enable-fpm \
+-enable-mbstring \
+--with-mcrypt \
+--with-gd \
+--enable-gd-native-ttf \
+--with-openssl \
+--with-mhash \
+-enable-pcntl \
+-enable-sockets \
+--with-xmlrpc \
+-enable-zip \
+-enable-soap \
+--with-mysqli=mysqlnd \
+--with-mysql=mysqlnd \
+--with-pdo-mysql
 
 make
 make install
+BLOCK
+
+checkinstall="n"
+read -p "Are you sure want to install php into service?(y/n):" checkinstall
+if [ $checkinstall="y" ]
+then
+	FILELIST=`ls $BINARY_PHP_PATH/bin`
+	for FILENAME in $FILELIST
+	do
+		ln -sn --force $BINARY_PHP_PATH/bin/$FILENAME /bin/$FILENAME
+	done
+
+	cd $BINARY_PHP_PATH
+	cp -f etc/php-fpm.conf.default etc/php-fpm.conf
+	cp $BINARY_PHP_PATH/php.ini-production $BINARY_PHP_PATH/etc/php.ini
+	cp $BINARY_PHP_PATH/sapi/fpm/init.d.php-fpm /etc/rc.d/init.d/php-fpm
+
+	chkconfig --del php-fpm
+	chkconfig --add php-fpm
+	chkconfig php-fpm on
+
+	service php-fpm start
+fi
+echo 1234567;exit 1;

@@ -2,7 +2,7 @@
 # 读取配置文件
 
 SOURCE_MYSQL=http://cdn.mysql.com/Downloads/MySQL-5.1/mysql-5.1.72-linux-x86_64-glibc23.tar.gz
-SOURCE_PHP=
+SOURCE_PHP=http://cn2.php.net/distributions/php-5.5.4.tar.gz
 SOURCE_NGINX=
 
 MACHINE_LONG_BIT=$(getconf LONG_BIT)
@@ -17,6 +17,10 @@ else
 	SOURCE_MYSQL_FILE=mysql-5.1.72-linux-i686-glibc23.tar.gz
 	BINARY_MYSQL_FOLDER=mysql-5.1.72-linux-i686-glibc23
 fi
+
+SOURCE_PHP_FILE=php-5.5.4.tar.gz
+SOURCE_PHP_FOLDER=php-5.5.4
+BINARY_PHP_FOLDER=php-5.5.4
 
 
 SPLITE_LINE="================================="

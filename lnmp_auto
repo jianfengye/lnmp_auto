@@ -24,7 +24,7 @@ cd $ROOT_PATH
 
 # 下载并安装mysql
 . auto/mysql
-echo 1234567;exit 1;
+
 # 下载并安装php
 . auto/php
 
