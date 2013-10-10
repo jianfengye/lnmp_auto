@@ -3,19 +3,37 @@
 
 # 下载nginx
 cd "$ROOT_PATH"/download/
-wget ${SOURCE_NGINX} -o nginx.tar.gz
-tar -zxvf nginx.tar.gz
+if [ ! -f "$SOURCE_NGINX_FILE" ]
+then
+    wget ${SOURCE_NGINX}
+fi
+
+tar -zxf "$SOURCE_NGINX_FILE"
 
 # 安装nginx
 BINARY_NGINX_PATH="$ROOT_PATH"/binary/nginx
 
-groupadd -r nginx
-useradd -r -g nginx nginx
+if grep -q nginx /etc/group
+then
+    echo "nginx group exists"
+else
+    groupadd nginx
+fi
 
-cd nginx
+if groups nginx | grep -q -E ' nginx(\s|$)'
+then
+    echo "nginx user exists"
+else
+    useradd -r -g nginx nginx
+fi
+
+cd $ROOT_PATH/download/$SOURCE_NGINX_FOLDER
+
+yum -y install openssl openssl-devel pcre-devel
+
+:<<BLOCK
 ./configure \
 --prefix="$BINARY_NGINX_PATH" \
---with-mysql="$BINARY_MYSQL_PATH" \
 --user=nginx \
 --group=nginx \
 --conf-path="$BINARY_NGINX_PATH"/conf/nginx.conf \
@@ -27,142 +45,25 @@ cd nginx
 
 make
 make install
+BLOCK
 
-cat << END > nginx.init
+cd $BINARY_NGINX_PATH
 
-$#!/bin/sh 
-# 
-# nginx - this script starts and stops the nginx daemon 
-# 
-# chkconfig:   - 85 15  
-# description:  Nginx is an HTTP(S) server, HTTP(S) reverse \ 
-#               proxy and IMAP/POP3 proxy server 
-# processname: nginx 
-# config:      /etc/nginx/nginx.conf 
-# config:      /etc/sysconfig/nginx 
-# pidfile:     /var/run/nginx.pid 
-  
-# Source function library. 
-. /etc/rc.d/init.d/functions 
-  
-# Source networking configuration. 
-. /etc/sysconfig/network 
-  
-# Check that networking is up. 
-[ "$NETWORKING" = "no" ] && exit 0 
-  
-nginx="$BINARY_NGINX_PATH/sbin/nginx" 
-prog=$(basename $nginx) 
-  
-NGINX_CONF_FILE="$BINARY_NGINX_PATH"/conf/nginx.conf 
-  
-[ -f /etc/sysconfig/nginx ] && . /etc/sysconfig/nginx 
-  
-lockfile=/var/lock/subsys/nginx 
-  
-make_dirs() { 
-   # make required directories 
-   user=`nginx -V 2>&1 | grep "configure arguments:" | sed 's/[^*]*--user=\([^ ]*\).*/\1/g' -` 
-   options=`$nginx -V 2>&1 | grep 'configure arguments:'` 
-   for opt in $options; do 
-       if [ `echo $opt | grep '.*-temp-path'` ]; then 
-           value=`echo $opt | cut -d "=" -f 2` 
-           if [ ! -d "$value" ]; then 
-               # echo "creating" $value 
-               mkdir -p $value && chown -R $user $value 
-           fi 
-       fi 
-   done 
-} 
-  
-start() { 
-    [ -x $nginx ] || exit 5 
-    [ -f $NGINX_CONF_FILE ] || exit 6 
-    make_dirs 
-    echo -n $"Starting $prog: " 
-    daemon $nginx -c $NGINX_CONF_FILE 
-    retval=$? 
-    echo 
-    [ $retval -eq 0 ] && touch $lockfile 
-    return $retval 
-} 
-  
-stop() { 
-    echo -n $"Stopping $prog: " 
-    killproc $prog -QUIT 
-    retval=$? 
-    echo 
-    [ $retval -eq 0 ] && rm -f $lockfile 
-    return $retval 
-} 
-  
-restart() { 
-    configtest || return $? 
-    stop 
-    sleep 1 
-    start 
-} 
-  
-reload() { 
-    configtest || return $? 
-    echo -n $"Reloading $prog: " 
-    killproc $nginx -HUP 
-    RETVAL=$? 
-    echo 
-} 
-  
-force_reload() { 
-    restart 
-} 
-  
-configtest() { 
-  $nginx -t -c $NGINX_CONF_FILE 
-} 
-  
-rh_status() { 
-    status $prog 
-} 
-  
-rh_status_q() { 
-    rh_status >/dev/null 2>&1 
-} 
-  
-case "$1" in 
-    start) 
-        rh_status_q && exit 0 
-        $1 
-        ;; 
-    stop) 
-        rh_status_q || exit 0 
-        $1 
-        ;; 
-    restart|configtest) 
-        $1 
-        ;; 
-    reload) 
-        rh_status_q || exit 7 
-        $1 
-        ;; 
-    force-reload) 
-        force_reload 
-        ;; 
-    status) 
-        rh_status 
-        ;; 
-    condrestart|try-restart) 
-        rh_status_q || exit 0 
-            ;; 
-    *) 
-        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload|configtest}" 
-        exit 2 
-esac
+checkinstall="n"
+read -p "Are you sure want to install mysql into service?(y/n):" checkinstall
+if [ $checkinstall="y" ]
+then
+    sed "s:/usr/sbin/nginx:${BINARY_NGINX_PATH}/sbin/nginx:" $BINARY_NGINX_PATH/nginx.init.template > $BINARY_NGINX_PATH/nginx.init
+    sed -i "s:/etc/nginx/nginx.conf:${BINARY_NGINX_PATH}/conf/nginx.conf:" $BINARY_NGINX_PATH/nginx.init
 
-END
+    cp $BINARY_NGINX_PATH/nginx.init /etc/rc.d/init.d/nginx
 
-cp nginx.init /etc/rc.d/init.d/nginx
+    chmod +x /etc/rc.d/init.d/nginx
+    chkconfig --del nginx
+    chkconfig --add nginx
+    chkconfig nginx on
 
-chmod +x /etc/rc.d/init.d/nginx
-chkconfig --add nginx
-chkconfig nginx on
+    service nginx start
+fi
 
-/etc/init.d/nginx start
+cd $ROOT_PATH

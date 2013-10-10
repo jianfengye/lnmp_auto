@@ -8,7 +8,7 @@ then
 	wget ${SOURCE_PHP}
 fi
 
-# tar -zxf "$SOURCE_PHP_FILE"
+tar -zxf "$SOURCE_PHP_FILE"
 
 
 # 安装php
@@ -19,7 +19,6 @@ cd $ROOT_PATH/download/$SOURCE_PHP_FOLDER
 yum -y install libxml2 libxml2-devel openssl openssl-devel \
 curl curl-devel gd gd-devel libmcrypt libmcrypt-devel
 
-:<<BLOCK
 ./configure \
 --prefix="$BINARY_PHP_PATH" \
 --with-config-file-path="$BINARY_PHP_PATH"/etc \
@@ -50,7 +49,6 @@ curl curl-devel gd gd-devel libmcrypt libmcrypt-devel
 
 make
 make install
-BLOCK
 
 checkinstall="n"
 read -p "Are you sure want to install php into service?(y/n):" checkinstall
@@ -64,13 +62,16 @@ then
 
 	cd $BINARY_PHP_PATH
 	cp -f etc/php-fpm.conf.default etc/php-fpm.conf
-	cp $BINARY_PHP_PATH/php.ini-production $BINARY_PHP_PATH/etc/php.ini
-	cp $BINARY_PHP_PATH/sapi/fpm/init.d.php-fpm /etc/rc.d/init.d/php-fpm
+	cp $ROOT_PATH/download/$SOURCE_PHP_FOLDER/php.ini-production $BINARY_PHP_PATH/etc/php.ini
+	cp $ROOT_PATH/download/$SOURCE_PHP_FOLDER/sapi/fpm/init.d.php-fpm /etc/rc.d/init.d/php-fpm
+	chmod o+x /etc/rc.d/init.d/php-fpm
 
 	chkconfig --del php-fpm
 	chkconfig --add php-fpm
 	chkconfig php-fpm on
 
+	service php-fpm stop
 	service php-fpm start
 fi
-echo 1234567;exit 1;
+
+cd $ROOT_PATH
