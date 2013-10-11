@@ -10,7 +10,7 @@ lnmp_auto - auto build lnmp environment
 # lnmp_auto环境
 + 已在Centos 64bit和32bit上测试过
 
-# statpot目录结构
+# lnmp_auto目录结构
 
 ```bash
 lnmp_auto
@@ -22,6 +22,7 @@ lnmp_auto
       |- php #php的安装和配置
       |- selinux #selinux的安装和处理
  | - binary #生成的二进制文件
+ | - dev  #开发过程使用的小脚本，没有用
  | - check  #检测脚本
  | - download #下载文件存放位置
  | - lnmp_auto #入口执行脚本
