@@ -20,13 +20,13 @@ cd $ROOT_PATH
 . auto/config
 
 # 关闭SELinux
-# . auto/selinux
+. auto/selinux
 
 # 下载并安装mysql
-# . auto/mysql
+. auto/mysql
 
 # 下载并安装php
-# . auto/php
+. auto/php
 
 # 下载并安装nginx
 . auto/nginx

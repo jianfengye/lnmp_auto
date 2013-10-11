@@ -66,6 +66,7 @@ then
 	service mysql start
 fi
 
-# TODO: mysql设置账号
+# mysql设置账号
+mysqladmin -uroot password lnmp_auto
 
 cd $ROOT_PATH

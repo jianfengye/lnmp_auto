@@ -39,7 +39,10 @@ lnmp_auto
 ### 会执行下面的操作
 + 会在lnmp_auto中下载对应的源文件
 + 自动生成可执行的二进制代码
-+ 将文件挂在为服务
++ 将文件挂载为服务
+
+## 额外说明点
+mysql的用户名密码为root/lnmp_auto
 
 # License
 [The MIT License (MIT)](http://opensource.org/licenses/MIT)

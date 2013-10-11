@@ -31,7 +31,6 @@ cd $ROOT_PATH/download/$SOURCE_NGINX_FOLDER
 
 yum -y install openssl openssl-devel pcre-devel
 
-:<<BLOCK
 ./configure \
 --prefix="$BINARY_NGINX_PATH" \
 --user=nginx \
@@ -45,7 +44,6 @@ yum -y install openssl openssl-devel pcre-devel
 
 make
 make install
-BLOCK
 
 cd $BINARY_NGINX_PATH
 
