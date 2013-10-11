@@ -1,6 +1,5 @@
 # Copyright (C) JianfengYe
 # 安装mysql
-
 # 下载mysql
 cd "$ROOT_PATH"/download/
 if [ ! -f "$SOURCE_MYSQL_FILE" ]
@@ -15,9 +14,8 @@ then
 	mkdir -p $BINARY_MYSQL_PATH
 fi
 
-tar -zxf "$SOURCE_MYSQL_FILE" -C "$BINARY_MYSQL_PATH"/
-
-BINARY_MYSQL_PATH="$BINARY_MYSQL_PATH"/"$BINARY_MYSQL_FOLDER"
+tar -zxf "$SOURCE_MYSQL_FILE"
+mv -f ${ROOT_PATH}/download/${BINARY_MYSQL_FOLDER}/* $BINARY_MYSQL_PATH
 
 if grep -q mysql /etc/group
 then
@@ -54,9 +52,11 @@ then
 	do
 		ln -sn --force $BINARY_MYSQL_PATH/bin/$FILENAME /bin/$FILENAME
 	done
-	ln -sfn $BINARY_MYSQL_PATH /usr/local/mysql
 	cd $BINARY_MYSQL_PATH/support-files
-	cp mysql.server /etc/rc.d/init.d/mysql
+
+	sed "s:/usr/local/mysql:${BINARY_MYSQL_PATH}:" mysql.server > mysql.server.init
+    sed -i "s:/usr/local/mysql/data:${BINARY_MYSQL_PATH}/data:" mysql.server.init
+	cp mysql.server.init /etc/rc.d/init.d/mysql
 	cp my-small.cnf /etc/my.cnf
 
 	chkconfig --del mysql
