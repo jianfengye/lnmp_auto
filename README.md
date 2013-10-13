@@ -44,9 +44,11 @@ lnmp_auto
 ## 额外说明点
 mysql的用户名密码为root/lnmp_auto
 启动服务等可以使用
+```bash
 /etc/init.d/mysql start/stop/restart
 /etc/init.d/php-fpm start/stop/restart
 /etc/init.d/nginx start/stop/restart
+```
 
 # License
 [The MIT License (MIT)](http://opensource.org/licenses/MIT)
